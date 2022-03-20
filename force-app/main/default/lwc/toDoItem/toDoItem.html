@@ -1,5 +1,22 @@
 <template>
     <div class="container">
-        <lightning-layout vertical-align="center">{todo.Name} {todo.Status__c}</lightning-layout>
+        <template if:true={isInProgress}>
+            <lightning-layout vertical-align="center">{todoname}  <lightning-badge
+                    label="In Progress" class="slds-theme_info">
+                </lightning-badge>
+            </lightning-layout>
+        </template>
+        <template if:true={isReadyToTake}>
+            <lightning-layout vertical-align="center">{todoname}  <lightning-badge
+                    label="Ready to Take" class="slds-theme_warning">
+                </lightning-badge>
+            </lightning-layout>
+        </template>
+        <template if:true={isDone}>
+            <lightning-layout vertical-align="center">{todoname}  <lightning-badge
+                    label="Done" class="slds-theme_success">
+                </lightning-badge>
+            </lightning-layout>
+        </template>
     </div>
 </template>
