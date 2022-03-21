@@ -1,5 +1,7 @@
 import { LightningElement, wire} from 'lwc';
 import getToDoList from '@salesforce/apex/ToDoController.getAllToDos';
+import { refreshApex } from '@salesforce/apex';
+
 export default class ToDoList extends LightningElement {
     toDos;
     error;
@@ -17,5 +19,9 @@ export default class ToDoList extends LightningElement {
             this.error = result.error;
             this.toDos = undefined;
         }
+    }
+
+    handleRefreshToDoList() {
+        refreshApex(this.wiredToDosResult);
     }
 }
