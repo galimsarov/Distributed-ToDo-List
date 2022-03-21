@@ -1,0 +1,14 @@
+<template>
+    <div class="container">
+        <template if:true={isDone}>
+            <lightning-layout vertical-align="center">
+                <lightning-input type="checkbox" checked disabled></lightning-input>{subtodoname}
+            </lightning-layout>
+        </template>
+        <template if:false={isDone}>
+            <lightning-layout vertical-align="center">
+                <lightning-input type="checkbox" unchecked disabled></lightning-input>{subtodoname}
+            </lightning-layout>
+        </template>
+    </div>
+</template>

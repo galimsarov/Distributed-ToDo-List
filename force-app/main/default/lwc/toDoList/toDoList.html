@@ -1,19 +1,29 @@
 <template>
-    <lightning-card title="ToDo List" icon-name="standard:record">
-        <template if:true={toDos}>
-            <div class="slds-var-m-around_medium">
-                <template for:each={toDos} for:item="toDo">
-                    <lightning-layout key={toDo.Id} class="slds-var-m-vertical_x-small">
-                        <lightning-layout-item flexibility="grow">
-                            <c-to-do-item
-                            class="slds-show slds-is-relative"
-                            todoname={toDo.Name}
-                            todostatus={toDo.Status__c}>
-                        </c-to-do-item>
-                        </lightning-layout-item>
-                    </lightning-layout>
-                </template>
-            </div>
-        </template>
+    <lightning-card>
+        <lightning-card title="Create ToDo" icon-name="standard:record">
+            <lightning-layout-item flexibility="grow">
+                <c-create-to-do class="slds-show slds-is-relative"
+                onrefreshtodolist={handleRefreshToDoList}
+                ></c-create-to-do>
+            </lightning-layout-item>
+        </lightning-card>
+        <lightning-card title="ToDo List" icon-name="standard:record">
+            <template if:true={toDos}>
+                <div class="slds-var-m-around_medium">
+                    <template for:each={toDos} for:item="toDo">
+                        <lightning-layout key={toDo.Id} class="slds-var-m-vertical_x-small">
+                            <lightning-layout-item flexibility="grow">
+                                <c-to-do-item
+                                class="slds-show slds-is-relative"
+                                todoname={toDo.Name}
+                                todostatus={toDo.Status__c}
+                                todoid={toDo.Id}>
+                            </c-to-do-item>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </template>
+                </div>
+            </template>
+        </lightning-card>
     </lightning-card>
 </template>
