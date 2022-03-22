@@ -1,0 +1,46 @@
+<template>
+    <lightning-card title="Find ToDo by Name" icon-name="standard:record">
+        <div class="slds-var-m-around_medium">
+            <lightning-input
+                label="Name"
+                onchange={handleNameChange}
+                class="slds-var-m-bottom_x-small"
+            ></lightning-input>
+            <lightning-button
+                label="Find ToDo by Name"
+                variant="brand"
+                onclick={findToDo}
+            ></lightning-button>
+            <template if:true={formVisible}>
+                <lightning-card title="Edit ToDo" icon-name="standard:record">
+                    <lightning-input
+                        label="Name"
+                        onchange={handleNameChange}
+                        class="slds-var-m-bottom_x-small"
+                        value={toDo.Name}>
+                    </lightning-input>
+                    <lightning-combobox
+                        label="Status"
+                        value={statusValue}
+                        options={statusOptions}
+                        onchange={handleStatusChange}
+                    ></lightning-combobox>
+                    <lightning-combobox
+                        name="recordTypes"
+                        label="ToDo Record Types"
+                        value={selectedRecordTypeValue}
+                        placeholder="-Select-"
+                        options={recordTypeOptions}
+                        onchange={handleRecordTypeChange}
+                    ></lightning-combobox>
+                    </br>
+                    <lightning-button
+                        label="Update Todo"
+                        variant="brand"
+                        onclick={updateTodo}
+                    ></lightning-button>
+                </lightning-card>
+            </template>
+        </div>
+    </lightning-card>
+</template>
