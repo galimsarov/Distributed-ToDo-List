@@ -12,6 +12,14 @@
                 options={statusOptions}
                 onchange={handleStatusChange}
             ></lightning-combobox>
+            <lightning-combobox
+                name="recordTypes"
+                label="ToDo Record Types"
+                value={selectedRecordTypeValue}
+                placeholder="-Select-"
+                options={recordTypeOptions}
+                onchange={handleRecordTypeChange}
+            ></lightning-combobox>
             </br>
             <lightning-button
                 label="Create Todo"
