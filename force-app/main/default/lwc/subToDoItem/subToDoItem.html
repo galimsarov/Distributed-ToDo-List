@@ -2,12 +2,38 @@
     <div class="container">
         <template if:true={isDone}>
             <lightning-layout vertical-align="center">
-                <lightning-input type="checkbox" checked disabled></lightning-input>{subtodoname}
+                <template if:true={isEditable}>
+                    <lightning-input
+                        type="checkbox"
+                        checked
+                        onchange={handleIsDoneChange}>
+                    </lightning-input>{subtodoname}
+                </template>
+                <template if:false={isEditable}>
+                    <lightning-input
+                        type="checkbox"
+                        checked
+                        disabled>
+                    </lightning-input>{subtodoname}
+                </template>
             </lightning-layout>
         </template>
         <template if:false={isDone}>
             <lightning-layout vertical-align="center">
-                <lightning-input type="checkbox" unchecked disabled></lightning-input>{subtodoname}
+                <template if:true={isEditable}>
+                    <lightning-input
+                        type="checkbox"
+                        unchecked
+                        onchange={handleIsDoneChange}>
+                    </lightning-input>{subtodoname}
+                </template>
+                <template if:false={isEditable}>
+                    <lightning-input
+                        type="checkbox"
+                        unchecked
+                        disabled>
+                    </lightning-input>{subtodoname}
+                </template>
             </lightning-layout>
         </template>
     </div>

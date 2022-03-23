@@ -8,6 +8,15 @@
             </lightning-layout-item>
         </lightning-card>
         <lightning-card title="ToDo List" icon-name="standard:record">
+            <lightning-card>
+                <lightning-layout-item flexibility="grow">
+                    <lightning-button class="slds-align_absolute-center"
+                    label="Update ToDo List"
+                    variant="brand"
+                    onclick={handleUpdateToDoList}
+                ></lightning-button>
+                </lightning-layout-item>
+            </lightning-card>
             <template if:true={toDos}>
                 <div class="slds-var-m-around_medium">
                     <template for:each={toDos} for:item="toDo">

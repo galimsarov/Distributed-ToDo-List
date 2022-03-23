@@ -15,6 +15,7 @@ export default class ToDoItem extends LightningElement {
     isToday = false;
     isLater = false;
     isTomorrow = false;
+    editable = false;
 
     connectedCallback() {
         getSubToDos({toDoId : this.todoid})

@@ -12,6 +12,13 @@
                 onclick={findToDo}
             ></lightning-button>
             <template if:true={formVisible}>
+                <lightning-card title="Create Sub-ToDo" icon-name="standard:record">
+                    <lightning-layout-item flexibility="grow">
+                        <c-create-sub-to-do class="slds-show slds-is-relative"
+                        todoid={toDoId}
+                        ></c-create-sub-to-do>
+                    </lightning-layout-item>
+                </lightning-card>
                 <lightning-card title="Edit ToDo" icon-name="standard:record">
                     <lightning-input
                         label="Name"
@@ -34,6 +41,19 @@
                         onchange={handleRecordTypeChange}
                     ></lightning-combobox>
                     </br>
+                    <template for:each={subToDos} for:item="subToDo">
+                        <lightning-layout key={subToDo.Id} class="slds-var-m-vertical_x-small">
+                            <lightning-layout-item flexibility="grow">
+                                <c-sub-to-do-item
+                                class="slds-show slds-is-relative"
+                                subtodoid={subToDo.Id}
+                                subtodoname={subToDo.Name}
+                                subtodoisdone={subToDo.Is_Done__c}
+                                editable={editable}>
+                            </c-sub-to-do-item>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </template>
                     <lightning-button
                         label="Update Todo"
                         variant="brand"

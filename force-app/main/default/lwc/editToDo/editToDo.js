@@ -2,22 +2,37 @@ import { LightningElement, wire } from 'lwc';
 import getToDo from '@salesforce/apex/ToDoController.getToDoByName';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import TODO_OBJECT from '@salesforce/schema/ToDo__c';
+import ID_FIELD from '@salesforce/schema/ToDo__c.Id';
+import NAME_FIELD from '@salesforce/schema/ToDo__c.Name';
+import STATUS_FIELD from '@salesforce/schema/ToDo__c.Status__c';
+import RECORD_TYPE_ID_VALUE from '@salesforce/schema/ToDo__c.RecordTypeId';
+import { updateRecord } from 'lightning/uiRecordApi';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { reduceErrors } from 'c/ldsUtils';
+import getSubToDos from '@salesforce/apex/SubToDoController.getAllSubToDos';
 
 export default class EditToDo extends LightningElement {
     toDo;
     toDoId;
     name;
-    formVisible = false;
     statusValue = 'Ready to Take';
     selectedRecordTypeValue;
+    subToDos;
+    
+    formVisible = false;
     recordTypeOptions = [];
+    editable = true;
 
     findToDo() {
         getToDo({name : this.name})
         .then(result => {
             this.formVisible = true;
             this.toDo = result;
-            this.toDoId = result.Id 
+            this.toDoId = result.Id;
+            getSubToDos({toDoId : this.toDoId})
+            .then(result => {
+                this.subToDos = result;
+            })
         })
     }
     
@@ -64,5 +79,33 @@ export default class EditToDo extends LightningElement {
 
     handleRecordTypeChange(event) {
         this.selectedRecordTypeValue = event.detail.value;
+    }
+
+    updateTodo() {
+        const fields = {};
+        fields[ID_FIELD.fieldApiName] = this.toDoId;
+        fields[NAME_FIELD.fieldApiName] = this.name;
+        fields[STATUS_FIELD.fieldApiName] = this.statusValue;
+        fields[RECORD_TYPE_ID_VALUE.fieldApiName] = this.selectedRecordTypeValue;
+        const recordInput = { fields };
+        updateRecord(recordInput)
+            .then(() => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Success',
+                        message: 'ToDo updated',
+                        variant: 'success'
+                    })
+                );
+            })
+            .catch((error) => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error updating record',
+                        message: reduceErrors(error).join(', '),
+                        variant: 'error'
+                    })
+                )
+            });
     }
 }

@@ -24,4 +24,8 @@ export default class ToDoList extends LightningElement {
     handleRefreshToDoList() {
         refreshApex(this.wiredToDosResult);
     }
+
+    handleUpdateToDoList() {
+        window.location.reload();
+    }
 }
