@@ -1,0 +1,1 @@
+Hello {!User.FirstName}, <br>The status of your ToDo was changed to <b>{!ToDo__c.Status__c}</b>.
