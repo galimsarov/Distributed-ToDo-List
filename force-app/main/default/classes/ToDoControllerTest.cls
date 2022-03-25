@@ -1,5 +1,5 @@
 @isTest
-private class ToDoControllerTest {
+private with sharing class ToDoControllerTest {
     private static Integer listSize = 10;
     private static String toDoCorrectName = 'ToDo 1';
     private static String toDoWrongName = 'Unknown ToDo';
