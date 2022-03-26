@@ -2,13 +2,14 @@
 private class ToDoToQueueAssignmentDispatcherTest {
     private static String toDoName = 'Test';
     private static String tomorrowRecordTypeName = 'Tomorrow';
+    private static String laterRecordTypeName = 'Later';
     private static Id laterToDosQueueId = ToDoToQueueAssignmentDispatcherHandler.getLaterToDosQueueId();
     private static Id tomorrowToDosQueueId = ToDoToQueueAssignmentDispatcherHandler.getTomorrowToDosQueueId();
     private static List<RecordType> recordTypes = ToDoToQueueAssignmentDispatcherHandler.recordTypes;
 
     @isTest
     private static void testAssignmentForCreatingToDos() {
-        ToDo__c newToDo = new ToDo__c(Name = toDoName);    
+        ToDo__c newToDo = new ToDo__c(Name = toDoName, RecordTypeId = getLaterRecordTypeId());    
         Test.startTest();
         insert newToDo;
         Test.stopTest();
@@ -35,6 +36,15 @@ private class ToDoToQueueAssignmentDispatcherTest {
     private static Id getTomorrowRecordTypeId() {
         for (RecordType recordType: recordTypes) {
             if (recordType.Name == tomorrowRecordTypeName) {
+                return recordType.Id;
+            }
+        }
+        return null;
+    }
+    
+    private static Id getLaterRecordTypeId() {
+        for (RecordType recordType: recordTypes) {
+            if (recordType.Name == laterRecordTypeName) {
                 return recordType.Id;
             }
         }
