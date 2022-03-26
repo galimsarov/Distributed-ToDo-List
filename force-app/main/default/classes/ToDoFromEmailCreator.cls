@@ -14,7 +14,6 @@ public with sharing class ToDoFromEmailCreator {
         }
     }
     
-    @testVisible
     private static ToDo__c getToDoFromDescription(String description, List<RecordType> recordTypes) {
         String[] stringParameters = description.split('\n');        
         if (stringParameters.size() == 3) {
@@ -27,7 +26,6 @@ public with sharing class ToDoFromEmailCreator {
         }
     }
     
-    @testVisible
     private static String getStatusFromParameter(String parameter) {
         if ((parameter == 'In Progress') || (parameter == 'In progress') || (parameter == 'in progress')) {
             return 'In Progress';
@@ -38,7 +36,6 @@ public with sharing class ToDoFromEmailCreator {
         }
     }
     
-    @testVisible
     private static Id getRecordTypeId(String parameter, List<RecordType> recordTypes) {
         Id laterId = null;
         for (RecordType recordType: recordTypes) {
