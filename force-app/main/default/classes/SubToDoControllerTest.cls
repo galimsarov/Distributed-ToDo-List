@@ -18,7 +18,9 @@ private with sharing class SubToDoControllerTest {
     private static void getAllSubToDosTest() {
         ToDo__c toDo = [SELECT Id, Name FROM ToDo__c WHERE Name = :toDoName];
         List<Sub_ToDo__c> subToDos = SubToDoController.getAllSubToDos(toDo.Id);
+        Test.startTest();
         System.assertEquals(listSize, subToDos.size());
+        Test.stopTest();
     }
 
 }

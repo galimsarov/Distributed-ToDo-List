@@ -28,7 +28,9 @@ private with sharing class ToDoFromEmailCreatorTest {
         descriptions.add(wrongToLaterDescription);
         ToDoFromEmailCreator.createToDos(descriptions);
         List<ToDo__c> toDos = [SELECT Name FROM ToDo__c WHERE Name = :correctName];
+        Test.startTest();
         System.assertEquals(6, toDos.size());
+        Test.stopTest();
     }
     
     @isTest
@@ -38,7 +40,9 @@ private with sharing class ToDoFromEmailCreatorTest {
         descriptions.add(description);
         ToDoFromEmailCreator.createToDos(descriptions);
         List<ToDo__c> toDos = [SELECT Name FROM ToDo__c WHERE Name = :correctName];
+        Test.startTest();
         System.assertEquals(0, toDos.size());
+        Test.stopTest();
     }
     
     @isTest
@@ -48,6 +52,8 @@ private with sharing class ToDoFromEmailCreatorTest {
         descriptions.add(description);
         ToDoFromEmailCreator.createToDos(descriptions);
         List<ToDo__c> toDos = [SELECT Name FROM ToDo__c WHERE Name = :correctName];
+        Test.startTest();
         System.assertEquals(0, toDos.size());
+        Test.stopTest();
     }   
 }
