@@ -48,7 +48,6 @@ global with sharing class ToDoRestManager {
         String response;
         ToDo__c reqToDo = (ToDo__c) JSON.deserialize(request.requestBody.toString(), ToDo__c.class);
         if (!RestUtility.existToDo(reqToDo.Id)) {
-            // clone(Boolean preserveId, Boolean isDeepClone, Boolean preserveReadonlyTimestamps, Boolean preserveAutonumber)
             ToDo__c td = (ToDo__c)RestUtility.copyObject(reqToDo);
             insert td;
             List<Sub_ToDo__c> listSubTd = reqToDo.getSObjects('Sub_ToDos__r');
