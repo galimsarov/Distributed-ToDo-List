@@ -15,17 +15,24 @@ global with sharing class ToDoRestManager {
         RestResponse res = RestContext.response;
         String todoId = request.requestURI.substring(
                 request.requestURI.lastIndexOf('/')+1);
-        ToDo__c result;
-        if (RestUtility.existToDo(todoId)) {
-            result = [SELECT Id, Name,
-                            Status__c, OwnerId, ExtId__c,     (SELECT Id, Name, Is_Done__c, ToDo__c FROM Sub_ToDos__r)
-                            FROM ToDo__c
-                            WHERE ExtId__c = :todoId];
-        } else {
+        ToDo__c targetToDo = RestUtility.getToDoById(todoId);
+        System.debug('targetToDo: ' + targetToDo);
+        // if (RestUtility.existsCopyToDo(todoId)) {
+        // if (result) {
+        //     // result = [SELECT Id, Name,
+        //     //                 Status__c, OwnerId, ExtId__c,     (SELECT Id, Name, Is_Done__c, ToDo__c FROM Sub_ToDos__r)
+        //     //                 FROM ToDo__c
+        //     //                 WHERE ExtId__c = :todoId];
+        //     return
+        // } else {
+        //     //if ToDo not exists
+        //     res.statusCode = 404;
+        // }
+        if(targetToDo==null) {
             //if ToDo not exists
             res.statusCode = 404;
         }
-        return result;
+        return targetToDo;
     }
     @HttpDelete
     global static void deleteToDo() {
@@ -33,9 +40,13 @@ global with sharing class ToDoRestManager {
         RestResponse res = RestContext.response;
         String todoId = request.requestURI.substring(
                 request.requestURI.lastIndexOf('/')+1);
-        if (RestUtility.existToDo(todoId)) {
-                ToDo__c thisToDo = [SELECT Id FROM ToDo__c WHERE ExtId__c = :todoId];
-                delete thisToDo;
+        ToDo__c targetToDo = RestUtility.getToDoById(todoId);
+        System.debug('targetToDo: ' + targetToDo);
+        // if (RestUtility.existsCopyToDo(todoId)) {
+        if (targetToDo != null) {
+                // ToDo__c thisToDo = [SELECT Id FROM ToDo__c WHERE ExtId__c = :todoId];
+                // delete thisToDo;
+                delete targetToDo;
         } else {
             // if ToDo not exists
             res.statusCode = 404;
@@ -47,7 +58,10 @@ global with sharing class ToDoRestManager {
         RestResponse res = RestContext.response;
         String response;
         ToDo__c reqToDo = (ToDo__c) JSON.deserialize(request.requestBody.toString(), ToDo__c.class);
-        if (!RestUtility.existToDo(reqToDo.Id)) {
+        ToDo__c targetToDo = RestUtility.getToDoById(reqToDo.Id);
+        System.debug('targetToDo: ' + targetToDo);
+        // if (!RestUtility.existsCopyToDo(reqToDo.Id)) {
+        if (targetToDo == null) {
             ToDo__c td = (ToDo__c)RestUtility.copyObject(reqToDo);
             insert td;
             List<Sub_ToDo__c> listSubTd = reqToDo.getSObjects('Sub_ToDos__r');
@@ -71,13 +85,21 @@ global with sharing class ToDoRestManager {
     global static String upsertToDo() {
         RestRequest request = RestContext.request;
         ToDo__c reqToDo = (ToDo__c) JSON.deserialize(request.requestBody.toString(), ToDo__c.class);
-        ToDo__c td = (ToDo__c)RestUtility.copyObject(reqToDo);
-        if (RestUtility.existToDo(reqToDo.Id)) {
-            ToDo__c targetTodo = [SELECT Id FROM ToDo__c WHERE ExtId__c = :reqToDo.Id];
-            td.Id = targetTodo.Id;
+        // try to find target ToDo as copy
+        ToDo__c targetToDo = RestUtility.getToDoById(reqToDo.Id);
+        // try to find target ToDo as source
+        if (targetToDo == null && reqToDo.ExtId__c != null) {
+            targetToDo = RestUtility.getToDoById(reqToDo.ExtId__c);
         }
-        upsert td;
-        return td.id;
+        System.debug('targetToDo: ' + targetToDo);
+        ToDo__c newTodo = (ToDo__c)RestUtility.copyObject(reqToDo);
+        // if (RestUtility.existsCopyToDo(reqToDo.Id)) {
+        if (targetToDo != null) {
+            // ToDo__c targetTodo = [SELECT Id FROM ToDo__c WHERE ExtId__c = :reqToDo.Id];
+            newTodo.Id = targetTodo.Id;
+        }
+        upsert newTodo;
+        return newTodo.id;
     }
     @HttpPatch
     global static String updateToDoFields() {
@@ -86,25 +108,28 @@ global with sharing class ToDoRestManager {
         String todoId = request.requestURI.substring(
                 request.requestURI.lastIndexOf('/')+1);
         String response;
-        if (RestUtility.existToDo(todoId)) {
-            ToDo__c todo = [SELECT Id FROM ToDo__c WHERE ExtId__c = :todoId];
+        ToDo__c targetToDo = RestUtility.getToDoById(todoId);
+        if (targetToDo != null) {
             // Deserialize the JSON string into name-value pairs
             Map<String, Object> params = (Map<String, Object>)JSON.deserializeUntyped(request.requestBody.toString());
+            // list of fieldNames that can be updated
+            List<String> fieldNameList = new List<String>{'status__c', 'name', 'recordTypeid', 'recordType.Name'};
             // Iterate through each parameter field and value
             for(String fieldName : params.keySet()) {
                 if(fieldName == 'status') {
-                    todo.put('status__c', params.get(fieldName));
-                } else if (fieldName != 'id') {
-                    // try to put
+                    targetToDo.put('status__c', params.get(fieldName));
+                // put fieldName value if fieldName is in list
+                } else if (fieldNameList.contains(fieldName.toLowerCase())) {
+                    // try to update field
                     try {
-                        todo.put(fieldName, params.get(fieldName));
+                        targetToDo.put(fieldName, params.get(fieldName));
                     } catch (SObjectException ex) {
                         System.debug('Exception subTodo.put: ' + ex);
                     }
                 }
             }
-            update todo;
-            response = todo.id;
+            update targetToDo;
+            response = targetToDo.id;
         } else {
             // if ToDo not exists
             response = '{"message":"ToDo not exists","errorCode":"NOT_FOUND"}';

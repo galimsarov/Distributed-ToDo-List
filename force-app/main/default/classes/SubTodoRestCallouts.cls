@@ -6,7 +6,7 @@
  * in body of  request.
  * Example:
  * String subTodoJson = JSON.serialize([SELECT Id, Name,
- *  Is_Done__c, ToDo__c, ExtId__c
+ *  Is_Done__c, ToDo__c, ExtId__c, ToDo__r.ExtId__c
  * FROM Sub_ToDo__c WHERE Id ='********']);
  */
 
@@ -16,24 +16,26 @@ public class SubTodoRestCallouts {
     public static HttpResponse response;
     public static HttpRequest request;
 
-    public static HttpResponse getSubTodo(String id) {
+    public static HttpResponse getSubTodo(String subTodoId) {
         request = new HttpRequest();
-        request.setEndpoint('callout:OrgAPI/services/apexrest/SubTodo/' + id);
+        String originId  = RestUtility.getIdByOrigin(subTodoId, 'SubToDo');
+        request.setEndpoint('callout:OrgAPI/services/apexrest/SubTodo/' + originId);
         request.setMethod('GET');
         response = http.send(request);
-        // System.debug('response.getBody(): ' + response.getBody());
-        if(response.getStatusCode() == 200) {
-            Sub_ToDo__c subTodo = (Sub_ToDo__c) JSON.deserialize(response.getBody(), Sub_ToDo__c.class);
-            // System.debug('subTodo: ' + subTodo);
+        if(response.getStatusCode() != 200) {
+            System.debug('The status code returned was not expected: ' +
+                    response.getStatusCode() + ' ' + response.getStatus());
         }
         return response;
     }
-    public static HttpResponse deleteSubTodo(String id) {
+    public static HttpResponse deleteSubTodo(String subTodoId) {
         request = new HttpRequest();
         request.setMethod('DELETE');
-        request.setEndpoint('callout:OrgAPI/services/apexrest/SubTodo/' + id);
+        String originId  = RestUtility.getIdByOrigin(subTodoId, 'SubToDo');
+        // If callout was made after the record was deleted in the source system, the originId check will not be available
+        String recordId = (originId!=null) ? originId : subTodoId;
+        request.setEndpoint('callout:OrgAPI/services/apexrest/SubTodo/' + recordId);
         response = http.send(request);
-        // System.debug('response.getBody(): ' + response.getBody());
         if(response.getStatusCode() != 200) {
             System.debug('The status code returned was not expected: ' +
                     response.getStatusCode() + ' ' + response.getStatus());
@@ -47,7 +49,6 @@ public class SubTodoRestCallouts {
         request.setHeader('Content-Type', 'application/json;charset=UTF-8');
         request.setBody(subTodoJson);
         response = http.send(request);
-        // System.debug('response.getBody(): ' + response.getBody());
         if(response.getStatusCode() != 200) {
             System.debug('The status code returned was not expected: ' +
                     response.getStatusCode() + ' ' + response.getStatus());
@@ -61,7 +62,6 @@ public class SubTodoRestCallouts {
         request.setHeader('Content-Type', 'application/json;charset=UTF-8');
         request.setBody(subTodoJson);
         response = http.send(request);
-        // System.debug('response.getBody(): ' + response.getBody());
         if(response.getStatusCode() != 200) {
             System.debug('The status code returned was not expected: ' +
                     response.getStatusCode() + ' ' + response.getStatus());
@@ -70,16 +70,17 @@ public class SubTodoRestCallouts {
     }
     // for Patch method examples of object serialization:
     // 1) String subTodoJson = '{"name":"1 PATCH TEST JSON","isDone":true}';
-    // 2) String subTodoJson = JSON.serialize([SELECT Name, Is_Done__c FROM Sub_ToDo__c WHERE Id
+    // 2) String subTodoJson = JSON.serialize([SELECT Name, Is_Done__c, ToDo__c,
+    //    ExtId__c, ToDo__r.ExtId__c FROM Sub_ToDo__c WHERE Id
     // = '************']);
     public static HttpResponse patchSubTodo(String subTodoId, String subTodoJson) {
         request = new HttpRequest();
         request.setMethod('PATCH');
-        request.setEndpoint('callout:OrgAPI/services/apexrest/SubTodo/' + subTodoId);
+        String originId  = RestUtility.getIdByOrigin(subTodoId, 'SubToDo');
+        request.setEndpoint('callout:OrgAPI/services/apexrest/SubTodo/' + originId);
         request.setHeader('Content-Type', 'application/json;charset=UTF-8');
         request.setBody(subTodoJson);
         response = http.send(request);
-        // System.debug('response.getBody(): ' + response.getBody());
         if(response.getStatusCode() != 200) {
             System.debug('The status code returned was not expected: ' +
                     response.getStatusCode() + ' ' + response.getStatus());

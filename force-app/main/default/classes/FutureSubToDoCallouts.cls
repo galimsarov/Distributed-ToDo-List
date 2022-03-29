@@ -1,33 +1,44 @@
 public with sharing class FutureSubToDoCallouts {
     @future(callout=true)
-    public static void postSubToDo(String subTodoId)
+    public static void postSubToDo(List<Id> listId)
     {
-        Sub_ToDo__c subTodo = [SELECT Id, Name, Is_Done__c, ToDo__c  FROM Sub_ToDo__c WHERE Id = :subTodoId];
-        // callout post
-        String subTodoJson = JSON.serialize(subTodo);
-        HttpResponse resp = SubTodoRestCallouts.postSubTodo(subTodoJson);
+        for (Id subTodoId : listId) {
+            String subTodoJson = subTodoToJson(subTodoId);
+            // callout post
+            HttpResponse resp = SubTodoRestCallouts.postSubTodo(subTodoJson);
+        }
     }
     @future(callout=true)
-    public static void putSubToDo(String subTodoId)
+    public static void putSubToDo(List<Id> listId)
     {
-        Sub_ToDo__c subTodo = [SELECT Id, Name, Is_Done__c, ToDo__c  FROM Sub_ToDo__c WHERE Id = :subTodoId];
-        // callout put
-        String subTodoJson = JSON.serialize(subTodo);
-        HttpResponse resp = SubTodoRestCallouts.putSubTodo(subTodoJson);
+        for (Id subTodoId : listId) {
+            String subTodoJson = subTodoToJson(subTodoId);
+            // callout put
+            HttpResponse resp = SubTodoRestCallouts.putSubTodo(subTodoJson);
+        }
     }
     @future(callout=true)
-    public static void patchSubToDo(String subTodoId)
+    // public static void patchSubToDo(String subTodoId)
+    public static void patchSubToDo(List<Id> listId)
     {
-        Sub_ToDo__c subTodo = [SELECT Id, Name, Is_Done__c, ToDo__c  FROM Sub_ToDo__c WHERE Id = :subTodoId];
-        // object serialization
-        String subTodoJson = JSON.serialize(subTodo);
-        // callout patch
-        HttpResponse resp = SubTodoRestCallouts.patchSubTodo(subTodoId, subTodoJson);
+        for (Id subTodoId : listId) {
+            String subTodoJson = subTodoToJson(subTodoId);
+            // callout patch
+            HttpResponse resp = SubTodoRestCallouts.patchSubTodo(subTodoId, subTodoJson);
+        }
     }
     @future(callout=true)
-    public static void deleteSubToDo(String subTodoId)
+    public static void deleteSubToDo(List<Id> listId)
     {
-        // callout delete
-        HttpResponse resp = SubTodoRestCallouts.deleteSubTodo(subTodoId);
+        for (Id subTodoId : listId) {
+            // callout delete
+            HttpResponse resp = SubTodoRestCallouts.deleteSubTodo(subTodoId);
+        }
+    }
+    // helper
+    static String subTodoToJson(String subTodoId) {
+        Sub_ToDo__c subTodo = [SELECT Id, Name, Is_Done__c, ToDo__c, ExtId__c, ToDo__r.ExtId__c  FROM Sub_ToDo__c WHERE Id = :subTodoId];
+        String subTodoJson = JSON.serialize(subTodo);
+        return subTodoJson;
     }
 }

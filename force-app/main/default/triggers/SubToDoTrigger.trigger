@@ -1,27 +1,24 @@
 trigger SubToDoTrigger on Sub_ToDo__c (after insert, after update, after delete) {
     if (Trigger.isInsert) {
-        Set<Id> listIds = Trigger.newMap.keySet();
-        // System.debug('sub trigger insert listIds: ' + listIds);
-        for (Id subTodoId : Trigger.newMap.keySet()) {
-            // future post
-            FutureSubToDoCallouts.postSubToDo(subTodoId);
-        }
+        List<Id> listId = new List<Id>(Trigger.newMap.keySet());
+        SubToDoTriggerHandler.insertHandler(listId);
     }
     if (Trigger.isUpdate) {
-        Set<Id> listIds = Trigger.newMap.keySet();
-        // System.debug('sub trigger update listIds: ' + listIds);
-        // for (Id todoId : Trigger.newMap.keySet()) {
-        for(Id subTodoId : listIds) {
-            // future patch
-            FutureSubToDoCallouts.patchSubToDo(subTodoId);
+        // get url of trigger initiator (internal or external)
+        String urlPath = System.URL.getCurrentRequestUrl().getPath().toLowerCase();
+        // only pass records to handler if trigger initiator is internal
+        if(!urlPath.startsWithIgnoreCase('/services/apexrest/')) {
+            List<Id> listId = new List<Id>(Trigger.newMap.keySet());
+            SubToDoTriggerHandler.updateHandler(listId);
         }
     }
     if (Trigger.isDelete) {
-        Set<Id> listIds = Trigger.oldMap.keySet();
-        // System.debug('sub trigger delete listIds: ' + listIds);
-        for(Id subTodoId : listIds) {
-            // future delete
-            FutureSubToDoCallouts.deleteSubToDo(subTodoId);
+        // get url of trigger initiator (internal or external)
+        String urlPath = System.URL.getCurrentRequestUrl().getPath().toLowerCase();
+        // only pass records to handler if trigger initiator is internal
+        if(!urlPath.startsWithIgnoreCase('/services/apexrest/')) {
+            List<Sub_ToDo__c> listSubTodo = new List<Sub_ToDo__c>(Trigger.oldMap.values());
+            SubToDoTriggerHandler.deleteHandler(listSubTodo);
         }
     }
 }
