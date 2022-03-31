@@ -52,6 +52,7 @@ public class SubTodoRestCallouts {
         if(response.getStatusCode() != 200) {
             System.debug('The status code returned was not expected: ' +
                     response.getStatusCode() + ' ' + response.getStatus());
+            System.debug('The response returned was: ' + response.getBody());
         }
         return response;
     }
@@ -68,11 +69,6 @@ public class SubTodoRestCallouts {
         }
         return response;
     }
-    // for Patch method examples of object serialization:
-    // 1) String subTodoJson = '{"name":"1 PATCH TEST JSON","isDone":true}';
-    // 2) String subTodoJson = JSON.serialize([SELECT Name, Is_Done__c, ToDo__c,
-    //    ExtId__c, ToDo__r.ExtId__c FROM Sub_ToDo__c WHERE Id
-    // = '************']);
     public static HttpResponse patchSubTodo(String subTodoId, String subTodoJson) {
         request = new HttpRequest();
         request.setMethod('PATCH');

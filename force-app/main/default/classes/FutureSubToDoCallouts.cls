@@ -38,7 +38,8 @@ public with sharing class FutureSubToDoCallouts {
     // helper
     static String subTodoToJson(String subTodoId) {
         Sub_ToDo__c subTodo = [SELECT Id, Name, Is_Done__c, ToDo__c, ExtId__c, ToDo__r.ExtId__c  FROM Sub_ToDo__c WHERE Id = :subTodoId];
-        String subTodoJson = JSON.serialize(subTodo);
+        // String subTodoJson = JSON.serialize(subTodo);
+        String subTodoJson = RestUtility.jsonGen(subTodo);
         return subTodoJson;
     }
 }

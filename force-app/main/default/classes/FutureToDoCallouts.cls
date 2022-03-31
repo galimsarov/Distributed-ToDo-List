@@ -21,9 +21,8 @@ public with sharing class FutureToDoCallouts {
     public static void patchToDo(List<Id> listId)
     {
         for (Id todoId : listId) {
-            ToDo__c todo = [SELECT Name, Status__c FROM ToDo__c WHERE Id = :todoId];
             // object serialization
-            String todoJson = JSON.serialize(todo);
+            String todoJson = todoToJson(todoId);
             // callout patch
             HttpResponse resp = ToDoRestCallouts.patchToDo(todoId, todoJson);
         }
@@ -38,8 +37,9 @@ public with sharing class FutureToDoCallouts {
     }
     // helper
     static String todoToJson(String todoId) {
-        ToDo__c todo = [SELECT Name, Status__c, ExtId__c, (SELECT Name, Is_Done__c, ToDo__c, ExtId__c  FROM Sub_ToDos__r) FROM ToDo__c WHERE Id = :todoId];
-        String todoJson = JSON.serialize(todo);
+        ToDo__c todo = [SELECT Name, Status__c, ExtId__c, RecordType.Name FROM ToDo__c WHERE Id = :todoId];
+        // object serialization
+        String todoJson = RestUtility.jsonGen(todo);
         return todoJson;
     }
 }

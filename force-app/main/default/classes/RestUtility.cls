@@ -39,20 +39,6 @@ public with sharing class RestUtility {
             return subTodo;
         }
     }
-    // public static Boolean existsCopyToDo(String todoId) {
-    //     if ([SELECT Count() FROM ToDo__c WHERE ExtId__c = :todoId]==0) {
-    //         return false;
-    //     } else {
-    //         return true;
-    //     }
-    // }
-    // public static Boolean existsCopySubToDo(String subTodoId) {
-    //     if ([SELECT Count() FROM Sub_ToDo__c WHERE ExtId__c = :subTodoId]==0) {
-    //         return false;
-    //     } else {
-    //         return true;
-    //     }
-    // }
     public static sObject copyObject(sObject sourceObj) {
         sObject objCopy = sourceObj.clone(false, true, false, false);
         if(sourceObj.getsObjectType() == ToDo__c.sObjectType) {
@@ -66,5 +52,59 @@ public with sharing class RestUtility {
             return subTodo;
         }
         return objCopy;
+    }
+    public static String jsonGen(sObject sObj) {
+        // Create a JSONGenerator object.
+        // Pass true to the constructor for pretty print formatting.
+        JSONGenerator gen = JSON.createGenerator(false);
+
+        String jsonObj;
+        if(sObj.getsObjectType() == ToDo__c.sObjectType) {
+            ToDo__c td = (ToDo__c)sObj;
+            // Write data to the JSON string.
+            gen.writeStartObject();
+            gen.writeStringField('id', td.id);
+            gen.writeStringField('name', td.name);
+            gen.writeStringField('status', (String)td.status__c);
+            if(td.recordType.Name != null) {
+                gen.writeStringField('recordTypeName', (String)td.recordType.Name);
+            }
+            if(td.extid__c != null) {
+                gen.writeStringField('extid', td.extid__c);
+            }
+            gen.writeEndObject();
+            jsonObj = gen.getAsString();
+            // System.debug('gen ToDo jsonObj: ' + jsonObj);
+        }
+        if(sObj.getsObjectType() == Sub_ToDo__c.sObjectType) {
+            Sub_ToDo__c subTd = (Sub_ToDo__c)sObj;
+            // Write data to the JSON string.
+            gen.writeStartObject();
+            gen.writeStringField('id', subTd.id);
+            gen.writeStringField('name', subTd.name);
+            gen.writeStringField('todo', (String)subTd.todo__c);
+            gen.writeBooleanField('isDone', subTd.is_done__c);
+            if(subTd.extid__c != null) {
+                gen.writeStringField('extid', subTd.extid__c);
+            }
+            if(subTd.ToDo__r.ExtId__c != null) {
+                gen.writeStringField('todoExtId', subTd.ToDo__r.ExtId__c);
+            }
+            gen.writeEndObject();
+            jsonObj = gen.getAsString();
+            // System.debug('gen SubToDo jsonObj: ' + jsonObj);
+        }
+        return jsonObj;
+    }
+    public static Id getRecordTypeId(String recordTypeName) {
+        // System.debug('getIdRecordType recordTypeName: ' + recordTypeName);
+        Id recId;
+        if(recordTypeName != null) {
+            List<RecordType> recList = [SELECT Id, Name FROM RecordType WHERE Name= :recordTypeName];
+            if (recList.size() > 0) {
+                recId = recList[0].id;
+            }
+        }
+        return recId;
     }
 }
