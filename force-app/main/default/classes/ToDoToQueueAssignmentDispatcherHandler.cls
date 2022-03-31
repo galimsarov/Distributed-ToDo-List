@@ -4,9 +4,25 @@ public with sharing class ToDoToQueueAssignmentDispatcherHandler {
     
     public static void assignToDosToQueue(List<ToDo__c> toDos) {        
         Map<Id, Id> queuesIdsToRecordTypeIds = getQueuesIdsToRecordTypeIds();        
-        for (ToDo__c toDo: toDos) {            
-            toDo.OwnerId = queuesIdsToRecordTypeIds.get(toDo.RecordTypeId);
+        for (ToDo__c toDo: toDos) {
+            if (isQueueMember(toDo.OwnerId)) {
+                toDo.OwnerId = queuesIdsToRecordTypeIds.get(toDo.RecordTypeId);   
+            }
         }
+    }
+    
+    private static Boolean isQueueMember(Id userId) {
+        List<Id> queuesIds = new List<Id>();
+        for (Group queue: queues) {
+            queuesIds.add(queue.Id);
+        }
+        List<GroupMember> queuesMembers = [SELECT GroupId, UserOrGroupId FROM GroupMember WHERE GroupId IN :queuesIds];
+        for (GroupMember member: queuesMembers) {
+            if ((member.UserOrGroupId == userId) || (member.GroupId == userId)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private static Map<Id, Id> getQueuesIdsToRecordTypeIds() {

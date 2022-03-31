@@ -9,6 +9,7 @@ private class ToDoToQueueAssignmentDispatcherTest {
 
     @isTest
     private static void testAssignmentForCreatingToDos() {
+        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
         ToDo__c newToDo = new ToDo__c(Name = toDoName, RecordTypeId = getLaterRecordTypeId());    
         Test.startTest();
         insert newToDo;
@@ -21,8 +22,9 @@ private class ToDoToQueueAssignmentDispatcherTest {
     
     @isTest
     private static void testAssignmentForUpdatingToDos() {
-        ToDo__c newToDo = new ToDo__c(Name = toDoName);        
-        insert newToDo;        
+        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
+        ToDo__c newToDo = new ToDo__c(Name = toDoName);
+        insert newToDo;
         newToDo.RecordTypeId = getTomorrowRecordTypeId();
         Test.startTest();
         update newToDo;
