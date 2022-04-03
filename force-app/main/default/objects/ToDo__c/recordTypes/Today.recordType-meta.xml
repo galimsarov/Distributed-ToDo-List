@@ -3,4 +3,19 @@
     <fullName>Today</fullName>
     <active>true</active>
     <label>Today</label>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>Done</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>In Progress</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ready to Take</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
 </RecordType>
