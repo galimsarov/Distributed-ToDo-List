@@ -32,7 +32,7 @@ public with sharing class RestUtility {
     }
     public static Sub_ToDo__c getSubToDoById(String subTodoId) {
         Sub_ToDo__c subTodo;
-        List<Sub_ToDo__c> subTodoList = [SELECT Name, Is_Done__c, ExtId__c FROM Sub_ToDo__c WHERE  ExtId__c = :subTodoId OR Id = :subTodoId];
+        List<Sub_ToDo__c> subTodoList = [SELECT Name, Is_Done__c,ToDo__c, ExtId__c, ToDo__r.ExtId__c FROM Sub_ToDo__c WHERE  ExtId__c = :subTodoId OR Id = :subTodoId];
         if (subTodoList.size() > 0) {
             return subTodoList[0];
         } else {
@@ -53,7 +53,7 @@ public with sharing class RestUtility {
         }
         return objCopy;
     }
-    public static String jsonGen(sObject sObj) {
+    public static String objJsonGen(sObject sObj) {
         // Create a JSONGenerator object.
         // Pass true to the constructor for pretty print formatting.
         JSONGenerator gen = JSON.createGenerator(false);
@@ -74,7 +74,6 @@ public with sharing class RestUtility {
             }
             gen.writeEndObject();
             jsonObj = gen.getAsString();
-            // System.debug('gen ToDo jsonObj: ' + jsonObj);
         }
         if(sObj.getsObjectType() == Sub_ToDo__c.sObjectType) {
             Sub_ToDo__c subTd = (Sub_ToDo__c)sObj;
@@ -92,12 +91,53 @@ public with sharing class RestUtility {
             }
             gen.writeEndObject();
             jsonObj = gen.getAsString();
-            // System.debug('gen SubToDo jsonObj: ' + jsonObj);
         }
         return jsonObj;
     }
+    public static String strJsonGen(Map<String, String> mapStrings) {
+        // Create a JSONGenerator object.
+        // Pass true to the constructor for pretty print formatting.
+        JSONGenerator gen = JSON.createGenerator(false);
+
+        String jsonStr;
+        gen.writeStartObject();
+        // iterate
+        for (String str : mapStrings.keySet()) {
+
+            switch on str {
+                 when 'id' {
+                    gen.writeStringField('id', mapStrings.get(str));
+                }
+                when 'name' {
+                    gen.writeStringField('name', mapStrings.get(str));
+                }
+                when 'status' {
+                    // for status__c ToDo
+                    gen.writeStringField('name', mapStrings.get(str));
+                }
+                when 'recordTypeName' {
+                    // for recordType ToDo
+                    gen.writeStringField('name', mapStrings.get(str));
+                }
+                when 'isDone' {
+                    // for Is_Done__c SubToDo
+                    gen.writeStringField('name', mapStrings.get(str));
+                }
+                when 'todo' {
+                    // for ToDo__c SubToDo
+                    gen.writeStringField('name', mapStrings.get(str));
+                }
+                when else {
+                    gen.writeStringField(str, mapStrings.get(str));
+                }
+            }
+        }
+        gen.writeEndObject();
+        jsonStr = gen.getAsString();
+        System.debug('gen jsonStr: ' + jsonStr);
+        return jsonStr;
+    }
     public static Id getRecordTypeId(String recordTypeName) {
-        // System.debug('getIdRecordType recordTypeName: ' + recordTypeName);
         Id recId;
         if(recordTypeName != null) {
             List<RecordType> recList = [SELECT Id, Name FROM RecordType WHERE Name= :recordTypeName];

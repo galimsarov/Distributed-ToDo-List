@@ -3,9 +3,13 @@ public with sharing class FutureToDoCallouts {
     public static void postToDo(List<Id> listId)
     {
         for (Id todoId : listId) {
-            String todoJson = todoToJson(todoId);
-            // callout post
-            HttpResponse resp = ToDoRestCallouts.postToDo(todoJson);
+            try {
+                String todoJson = todoToJson(todoId);
+                // callout post
+                HttpResponse resp = ToDoRestCallouts.postToDo(todoJson);
+            } catch(Exception e) {
+                System.debug('FutureToDoCallouts.postToDo: exception caught: ' + e.getMessage());
+            }
         }
     }
     @future(callout=true)
@@ -39,7 +43,7 @@ public with sharing class FutureToDoCallouts {
     static String todoToJson(String todoId) {
         ToDo__c todo = [SELECT Name, Status__c, ExtId__c, RecordType.Name FROM ToDo__c WHERE Id = :todoId];
         // object serialization
-        String todoJson = RestUtility.jsonGen(todo);
+        String todoJson = RestUtility.objJsonGen(todo);
         return todoJson;
     }
 }

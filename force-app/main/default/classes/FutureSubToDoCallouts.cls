@@ -3,9 +3,13 @@ public with sharing class FutureSubToDoCallouts {
     public static void postSubToDo(List<Id> listId)
     {
         for (Id subTodoId : listId) {
-            String subTodoJson = subTodoToJson(subTodoId);
-            // callout post
-            HttpResponse resp = SubTodoRestCallouts.postSubTodo(subTodoJson);
+            try {
+                String subTodoJson = subTodoToJson(subTodoId);
+                // callout post
+                HttpResponse resp = SubTodoRestCallouts.postSubTodo(subTodoJson);
+            } catch(Exception e) {
+                System.debug('FutureToDoCallouts.postToDo: exception caught: ' + e.getMessage());
+            }
         }
     }
     @future(callout=true)
@@ -18,7 +22,6 @@ public with sharing class FutureSubToDoCallouts {
         }
     }
     @future(callout=true)
-    // public static void patchSubToDo(String subTodoId)
     public static void patchSubToDo(List<Id> listId)
     {
         for (Id subTodoId : listId) {
@@ -38,8 +41,8 @@ public with sharing class FutureSubToDoCallouts {
     // helper
     static String subTodoToJson(String subTodoId) {
         Sub_ToDo__c subTodo = [SELECT Id, Name, Is_Done__c, ToDo__c, ExtId__c, ToDo__r.ExtId__c  FROM Sub_ToDo__c WHERE Id = :subTodoId];
-        // String subTodoJson = JSON.serialize(subTodo);
-        String subTodoJson = RestUtility.jsonGen(subTodo);
+        // object serialization
+        String subTodoJson = RestUtility.objJsonGen(subTodo);
         return subTodoJson;
     }
 }

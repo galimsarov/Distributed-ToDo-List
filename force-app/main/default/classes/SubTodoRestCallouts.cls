@@ -15,6 +15,10 @@ public class SubTodoRestCallouts {
     public static Http http = new Http();
     public static HttpResponse response;
     public static HttpRequest request;
+    // testing strings
+    public static String testbody = null;
+    public static String testpoint = null;
+    public static Integer statusCode = 0;
 
     public static HttpResponse getSubTodo(String subTodoId) {
         request = new HttpRequest();
@@ -26,6 +30,8 @@ public class SubTodoRestCallouts {
             System.debug('The status code returned was not expected: ' +
                     response.getStatusCode() + ' ' + response.getStatus());
         }
+        // System.debug('response: ' + response.getBody());
+        forUnitTest(response);
         return response;
     }
     public static HttpResponse deleteSubTodo(String subTodoId) {
@@ -40,6 +46,7 @@ public class SubTodoRestCallouts {
             System.debug('The status code returned was not expected: ' +
                     response.getStatusCode() + ' ' + response.getStatus());
         }
+        forUnitTest(response);
         return response;
     }
     public static HttpResponse postSubTodo(String subTodoJson) {
@@ -54,6 +61,7 @@ public class SubTodoRestCallouts {
                     response.getStatusCode() + ' ' + response.getStatus());
             System.debug('The response returned was: ' + response.getBody());
         }
+        forUnitTest(response);
         return response;
     }
     public static HttpResponse putSubTodo(String subTodoJson) {
@@ -67,6 +75,7 @@ public class SubTodoRestCallouts {
             System.debug('The status code returned was not expected: ' +
                     response.getStatusCode() + ' ' + response.getStatus());
         }
+        forUnitTest(response);
         return response;
     }
     public static HttpResponse patchSubTodo(String subTodoId, String subTodoJson) {
@@ -81,6 +90,15 @@ public class SubTodoRestCallouts {
             System.debug('The status code returned was not expected: ' +
                     response.getStatusCode() + ' ' + response.getStatus());
         }
+        forUnitTest(response);
         return response;
+    }
+    public static void forUnitTest(HttpResponse response) {
+        // for future callout unit test
+        if (Test.isRunningTest()) {
+                testbody = (String)response.getBody();
+                testpoint=(String)request.getEndpoint();
+                statusCode = (Integer)response.getStatusCode();
+        }
     }
 }

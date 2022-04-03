@@ -52,6 +52,7 @@ global with sharing class SubTodoRestManager {
         String response;
         // Deserializes JSON string into wrapper Apex class.
         ReqJsonSubTodo reqJsonSubTd = (ReqJsonSubTodo) JSON.deserialize(request.requestBody.toString(), ReqJsonSubTodo.class);
+        // System.debug('postSubTodo reqJsonSubTd: ' + reqJsonSubTd);
         Sub_ToDo__c targetSubToDo = RestUtility.getSubToDoById(reqJsonSubTd.Id);
         if (targetSubToDo == null) {
             // try to find parent ToDo as copy
@@ -92,26 +93,48 @@ global with sharing class SubTodoRestManager {
     @HttpPut
     global static Id upsertSubTodo() {
         RestRequest request = RestContext.request;
-        Sub_ToDo__c reqSubTodo = (Sub_ToDo__c) JSON.deserialize(request.requestBody.toString(), Sub_ToDo__c.class);
-        // try to find target SubToDo as copy
-        Sub_ToDo__c targetSubToDo = RestUtility.getSubToDoById(reqSubTodo.Id);
-        // try to find target SubToDo as source
-        if (targetSubToDo == null && reqSubTodo.ExtId__c != null) {
-            targetSubToDo = RestUtility.getSubToDoById(reqSubTodo.ExtId__c);
-        }
-        Sub_ToDo__c newSubTodo = (Sub_ToDo__c)RestUtility.copyObject(reqSubTodo);
+        RestResponse res = RestContext.response;
+        String response;
+        // Deserializes JSON string into wrapper Apex class.
+        ReqJsonSubTodo reqJsonSubTd = (ReqJsonSubTodo) JSON.deserialize(request.requestBody.toString(), ReqJsonSubTodo.class);
+        // System.debug('upsertSubTodo reqJsonSubTd: ' + reqJsonSubTd);
         // try to find parent ToDo as copy
-        ToDo__c td = RestUtility.getToDoById(reqSubTodo.ToDo__c);
+        ToDo__c td = RestUtility.getToDoById(reqJsonSubTd.todo);
         // try to find parent ToDo as source
-        if (td == null && reqSubTodo.ToDo__r.ExtId__c != null) {
-            td = RestUtility.getToDoById(reqSubTodo.ToDo__r.ExtId__c);
+        if (td == null && reqJsonSubTd.todoExtId != null) {
+            td = RestUtility.getToDoById(reqJsonSubTd.todoExtId);
         }
-        newSubTodo.ToDo__c = td.Id;
-        if (targetSubTodo != null) {
-            newSubTodo.Id = targetSubTodo.Id;
+        if (td != null) {
+            Sub_ToDo__c newSubTodo = new Sub_ToDo__c(Name=reqJsonSubTd.name, Is_Done__c=reqJsonSubTd.isDone,  ToDo__c=td.Id);
+            if (reqJsonSubTd.id != null) {
+                newSubTodo.ExtId__c=reqJsonSubTd.id;
+                // try to find target SubToDo as copy
+                Sub_ToDo__c targetSubToDo = RestUtility.getSubToDoById(reqJsonSubTd.id);
+                // try to find target ToDo as source
+                if (targetSubToDo == null && reqJsonSubTd.extid != null) {
+                    targetSubToDo = RestUtility.getSubToDoById(reqJsonSubTd.extid);
+                }
+                // System.debug('targetSubToDo: ' + targetSubToDo);
+                if (targetSubToDo != null) {
+                    newSubTodo.Id = targetSubToDo.Id;
+                }
+            }
+            // upsert new SubToDo
+            // System.debug('before upsert newSubTodo: ' + newSubTodo);
+            try {
+                upsert newSubTodo;
+
+            } catch(DmlException e) {
+                System.debug('upsert DmlException caught: ' + e.getMessage());
+            }
+            // System.debug('after upsert newSubTodo: ' + newSubTodo);
+            response = newSubTodo.id;
+        } else {
+            // if parent ToDo not exists
+            response = '{"message":"Parent ToDo not exists","errorCode":"NOT_FOUND"}';
+            res.statusCode = 404;
         }
-        upsert newSubTodo;
-        return newSubTodo.id;
+        return response;
     }
     @HttpPatch
     global static Id updateSubTodoFields() {
@@ -124,6 +147,7 @@ global with sharing class SubTodoRestManager {
         if (targetSubToDo != null) {
             // Deserializes the JSON string into wrapper Apex class.
             ReqJsonSubTodo reqJsonSubTd = (ReqJsonSubTodo)JSON.deserialize(request.requestBody.toString(), ReqJsonSubTodo.class);
+            // System.debug('updateSubTodoFields reqJsonSubTd: ' + reqJsonSubTd);
             // try to update field
             try {
                 targetSubToDo.put('name', reqJsonSubTd.name);
