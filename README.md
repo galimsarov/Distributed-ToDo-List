@@ -1,18 +1,23 @@
-# Salesforce DX Project: Next Steps
+# Distributed ToDo List
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+Final project on the course "Salesforce Development 0122"
 
-## How Do You Plan to Deploy Your Changes?
+## Main features
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+- Custom objects with custom fields and record types
+- Lightning web components
+- REST integration
+- Email-to-Case creation
+- Reports and dashboards
+- Assignment records to queues
+- Security model
+- Send email via flow
+- Custom metadata types
+- Async apex
+- Unit tests
 
-## Configure Your Salesforce DX Project
+## Authors
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-## Read All About It
-
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+- [Evgenii Galimsarov](https://github.com/galimsarov)
+- [Dmitrii Pelipenko](https://github.com/dpelipen)
+- [Aleksei Tasbauov](https://github.com/alexdali)
