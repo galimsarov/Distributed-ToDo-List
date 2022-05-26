@@ -16,6 +16,9 @@ Final project on the course "Salesforce Development 0122"
 - Async apex
 - Unit tests
 
+aldimjen@sfdev0122.com
+Salesforce2022
+
 ## Authors
 
 - [Evgenii Galimsarov](https://github.com/galimsarov)
