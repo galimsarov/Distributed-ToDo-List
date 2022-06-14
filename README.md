@@ -1,6 +1,6 @@
 # Distributed ToDo List
 
-Final project on the course "Salesforce Development 0122"
+Salesforce Development project
 
 ## Main features
 
@@ -16,6 +16,7 @@ Final project on the course "Salesforce Development 0122"
 - Async apex
 - Unit tests
 
+Try app here: https://login.salesforce.com/
 aldimjen@sfdev0122.com
 Salesforce2022
 
